@@ -106,12 +106,12 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
       String videoId = videos[index];
 
-      final WebViewController controller = loadController(index: index)
-        ..loadHtmlString(
-          (await getHTMLString())
-              .replaceAll('{{videoid}}', videoId)
-              .replaceAll('{{autoplay}}', index == currentIndex ? 'true' : 'false'),
-        );
+      final WebViewController controller = loadController(index: index);
+      await controller.loadHtmlString(
+        (await getHTMLString())
+            .replaceAll('{{videoid}}', videoId)
+            .replaceAll('{{autoplay}}', index == currentIndex ? 'true' : 'false'),
+      );
 
       /// Add to [controllers] list
       controllers[index] = controller;
@@ -131,8 +131,23 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     if (controllers.containsKey(index) && controllers[index] != null) {
       currentIndex = index;
       controller = controllers[index]!;
+      await controller!.addJavaScriptChannel(
+        "Duration",
+        onMessageReceived: (p0) {
+          if (duration == 0) {
+            duration = double.tryParse(p0.message) ?? 0;
+            setState(() {});
+          }
+        },
+      );
+      await controller!.addJavaScriptChannel(
+        "CurrentDuration",
+        onMessageReceived: (p0) {
+          currentDuration = double.tryParse(p0.message) ?? 0;
+          setState(() {});
+        },
+      );
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
-      // await controller?.runJavaScript('flutterControl({ "command": "changeToMediumQuality", "parameter": null });');
       print('🚀🚀🚀 INITIALIZED Playing Index : $index}');
       Future.delayed(Duration.zero, () => setState(() {}));
     } else {
@@ -186,6 +201,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         ),
       );
   }
+
+  double duration = 0;
+  double currentDuration = 0;
 
   Future<void> _playNext(int index) async {
     /// Stop [index - 1] controller
@@ -273,182 +291,165 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: 1 == 1
-            ? controllers.isEmpty
-                ? Center(child: CircularProgressIndicator())
-                : PageView.builder(
-                    itemCount: controllers.length,
-                    scrollDirection: Axis.vertical,
-                    onPageChanged: (value) {
-                      int tempIndex = value;
+        child: controllers.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : PageView.builder(
+                itemCount: controllers.length,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (value) {
+                  int tempIndex = value;
 
-                      if ((tempIndex == currentIndex) || (tempIndex < 0)) {
-                        print("Already Loaded");
-                        return;
-                      }
-                      if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
-                        print("Already Loaded");
-                        return;
-                      }
+                  if ((tempIndex == currentIndex) || (tempIndex < 0)) {
+                    print("Already Loaded");
+                    return;
+                  }
+                  if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
+                    print("Already Loaded");
+                    return;
+                  }
 
-                      if (tempIndex > focusedIndex) {
-                        _playNext(tempIndex);
-                      } else {
-                        _playPrevious(tempIndex);
-                      }
-                      focusedIndex = tempIndex;
-                    },
-                    itemBuilder: (context, index) {
-                      return Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          controllers[index] == null
-                              ? Center(child: CircularProgressIndicator())
-                              : WebViewWidget(
-                                  controller: controllers[index]!,
-                                  gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                                    Factory<OneSequenceGestureRecognizer>(
-                                      () => TapGestureRecognizer()..onTap = _handleTap,
-                                    ),
-                                  },
+                  if (tempIndex > focusedIndex) {
+                    _playNext(tempIndex);
+                  } else {
+                    _playPrevious(tempIndex);
+                  }
+                  focusedIndex = tempIndex;
+                },
+                itemBuilder: (context, index) {
+                  return Stack(
+                    // fit: StackFit.expand,
+                    children: [
+                      controllers[index] == null
+                          ? Center(child: CircularProgressIndicator())
+                          : WebViewWidget(
+                              controller: controllers[index]!,
+                              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                                Factory<OneSequenceGestureRecognizer>(
+                                  () => TapGestureRecognizer()..onTap = _handleTap,
                                 ),
-                          GestureDetector(
-                            onTap: () async => await _handleTap(),
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height * 0.90,
-                                color: Colors.transparent,
-                                alignment: Alignment.center,
-                                child: isIconShow
-                                    ? Image.asset(
-                                        !isPlaying ? "assets/pause.png" : "assets/play.png",
-                                        height: 50,
-                                        width: 50,
-                                      )
-                                    : const SizedBox.shrink(),
-                              ),
+                              },
                             ),
+                      playAndPauseButton(context: context),
+                      volumeAndBackWordButton(context: context),
+                      forwordButton(context: context),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 80,
+                          child: Slider(
+                            value: currentDuration,
+                            max: duration,
+                            thumbColor: Colors.transparent,
+                            activeColor: Colors.amber,
+                            overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                            inactiveColor: Colors.red,
+                            secondaryActiveColor: Colors.amber,
+                            autofocus: false,
+                            onChanged: (value) async {
+                              await controller!.runJavaScript(
+                                'flutterControl({ "command": "seek", "parameter": $value });',
+                              );
+                              print("=============$value");
+                            },
                           ),
-                          GestureDetector(
-                            onVerticalDragUpdate: _onVerticalDragUpdate,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                width: 100,
-                                height: MediaQuery.of(context).size.height * 0.6,
-                                color: Colors.transparent,
-                                alignment: Alignment.center,
-                              ),
-                            ),
-                          ),
-                          // Align(
-                          //   alignment: Alignment.bottomCenter,
-                          //   child: Slider(
-                          //     value: 0,
-                          //     onChanged: (value) {
-                          //       print("=============$value");
-                          //     },
-                          //   ),
-                          // ),
-                        ],
-                      );
-                    },
-                  )
-            : Stack(
-                fit: StackFit.expand,
-                children: [
-                  controller == null
-                      ? Center(child: CircularProgressIndicator())
-                      : WebViewWidget(
-                          controller: controller!,
-                          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                            Factory<OneSequenceGestureRecognizer>(
-                              () => TapGestureRecognizer()..onTap = _handleTap,
-                            ),
-                          },
                         ),
-                  GestureDetector(
-                    onPanEnd: (details) {
-                      int tempIndex = currentIndex;
-
-                      if (details.velocity.pixelsPerSecond.dy > 600) {
-                        tempIndex = tempIndex - 1;
-
-                        if ((tempIndex == currentIndex) || (tempIndex < 0)) {
-                          print("Already Loaded");
-                          return;
-                        }
-                        print("Load Previous");
-                      } else if (details.velocity.pixelsPerSecond.dy < -600) {
-                        tempIndex = tempIndex + 1;
-                        if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
-                          print("Already Loaded");
-                          return;
-                        }
-                        print("Load Next");
-                      }
-
-                      if (tempIndex > focusedIndex) {
-                        _playNext(tempIndex);
-                      } else {
-                        _playPrevious(tempIndex);
-                      }
-                      focusedIndex = tempIndex;
-                    },
-                    onTap: () async => await _handleTap(),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.90,
-                        color: Colors.transparent,
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
       ),
-      // floatingActionButton: Row(
-      //   mainAxisAlignment: MainAxisAlignment.end,
-      //   crossAxisAlignment: CrossAxisAlignment.center,
-      //   children: [
-      //     SizedBox(
-      //       width: 100,
-      //       child: FloatingActionButton(
-      //         onPressed: () async {
-      //           if (controller == null) return;
-      //           controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
-      //         },
-      //         child: Row(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           crossAxisAlignment: CrossAxisAlignment.center,
-      //           children: [
-      //             Icon(Icons.play_arrow),
-      //             Text("/", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 26)),
-      //             Icon(Icons.pause),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      // floatingActionButton: floatingButton(context: context),
     );
   }
 
-  void _onVerticalDragUpdate(DragUpdateDetails details) {
-    if (controller == null) return;
-    setState(
-      () async {
-        if (details.primaryDelta! < 0) {
-          await controller!.runJavaScript('flutterControl({ "command": "increaseVolume", "parameter": 0.1 });');
-        } else if (details.primaryDelta! > 0) {
-          await controller!.runJavaScript('flutterControl({ "command": "decreaseVolume", "parameter": 0.1 });');
-          print('======================Dragging Down');
-        }
-      },
+  Widget floatingButton({required BuildContext context}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 100,
+          child: FloatingActionButton(
+            onPressed: () async {
+              if (controller == null) return;
+              await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.play_arrow),
+                Text("/", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 26)),
+                Icon(Icons.pause),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget playAndPauseButton({required BuildContext context}) {
+    return GestureDetector(
+      onTap: () async => await _handleTap(),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.90,
+          color: Colors.transparent,
+          alignment: Alignment.center,
+          child: isIconShow
+              ? Image.asset(
+                  !isPlaying ? "assets/pause.png" : "assets/play.png",
+                  height: 50,
+                  width: 50,
+                )
+              : const SizedBox.shrink(),
+        ),
+      ),
+    );
+  }
+
+  Widget volumeAndBackWordButton({required BuildContext context}) {
+    return GestureDetector(
+      onVerticalDragUpdate: _onVerticalDragUpdate,
+      onTap: () async => await controller!.runJavaScript('flutterControl({ "command": "rewind", "parameter": 10 });'),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          width: 100,
+          height: MediaQuery.of(context).size.height * 0.6,
+          color: Colors.transparent,
+          alignment: Alignment.center,
+        ),
+      ),
+    );
+  }
+
+  Widget forwordButton({required BuildContext context}) {
+    return GestureDetector(
+      onTap: () async => await controller!.runJavaScript('flutterControl({ "command": "forward", "parameter": 10 });'),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          width: 100,
+          height: MediaQuery.of(context).size.height * 0.6,
+          color: Colors.transparent,
+          alignment: Alignment.center,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onVerticalDragUpdate(DragUpdateDetails details) async {
+    if (controller == null) return;
+    if (details.primaryDelta! < 0) {
+      await controller!.runJavaScript('flutterControl({ "command": "increaseVolume", "parameter": 0.01 });');
+    } else if (details.primaryDelta! > 0) {
+      await controller!.runJavaScript('flutterControl({ "command": "decreaseVolume", "parameter": 0.01 });');
+    }
   }
 
   bool isPlaying = false;
