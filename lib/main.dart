@@ -136,7 +136,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         onMessageReceived: (p0) {
           if (duration == 0) {
             duration = double.tryParse(p0.message) ?? 0;
-            setState(() {});
           }
         },
       );

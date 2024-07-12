@@ -79,15 +79,10 @@
     <style>
         * {
             user-select: none;
-            /* supported by Chrome and Opera */
             -webkit-user-select: none;
-            /* Safari */
             -khtml-user-select: none;
-            /* Konqueror HTML */
             -moz-user-select: none;
-            /* Firefox */
             -ms-user-select: none;
-            /* Internet Explorer/Edge */
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
 
@@ -116,9 +111,7 @@
 
         body {
             background-color: transparent;
-
             font-family: 'rubik', sans-serif;
-
         }
 
         .container {
@@ -145,7 +138,9 @@
         }
 
         .plyr--video .plyr__control.plyr__tab-focus,
+
         .plyr--video .plyr__control:hover,
+
         .plyr--video .plyr__control[aria-expanded=true] {
             background: #ff7755;
         }
@@ -196,7 +191,6 @@
 
         .plyr__progress input {
             border-radius: 0px !important;
-            -webkit-appearance: none;
             background: transparent;
         }
 
@@ -238,6 +232,7 @@
         }
 
         .ct-series-a .ct-area,
+
         .ct-series-a .ct-slice-donut-solid,
         .ct-series-a .ct-slice-pie {
             fill: url(#gradient-a);
@@ -376,18 +371,15 @@
             transition: none;
         }
 
-        /*workaround to fix safari bug with not showing video thumbnail:*/
         .plyr__video-wrapper {
             z-index: 0;
         }
 
-        /* fix for vertical subtitles scrolling */
         .plyr__menu__container>div {
             max-height: 50vh;
             overflow-y: auto;
         }
 
-        /* Fix for controls overlapping on small devices */
         @media only screen and (max-width: 500px) {
             .hide_mobile.plyr__spacer {
                 display: none
@@ -398,7 +390,6 @@
             min-width: 32px;
         }
 
-        /* Chromecast */
         .chromecast-connected {
 
             opacity: 1;
@@ -463,9 +454,6 @@
             }
         }
     </style>
-
-
-
 </head>
 
 <body id="body">
@@ -503,11 +491,6 @@
         </video> -->
     </div>
     <script type="text/javascript">
-
-        function Hello() {
-            alert("Hi, there");
-        }
-
         var shouldAutoplay = '{{autoplay}}';
 
         var videoElement = document.getElementById('main-video');
@@ -518,14 +501,13 @@
         }
 
         var thumbnail_width = 300;
-
         var seek_thumbnail_config = {
             enabled: true,
-            pic_num: 18,// total thumbnail numbers
-            width: thumbnail_width,// per thumbnail item width
-            height: thumbnail_width * 9 / 16, // default height
-            col: 6,// per thumbnail image columns
-            row: 6,// per thumbnail image rows
+            pic_num: 18,
+            width: thumbnail_width,
+            height: thumbnail_width * 9 / 16,
+            col: 6,
+            row: 6,
             offsetX: 0,
             offsetY: 0,
             urls: [
@@ -554,7 +536,6 @@
 
         var video_start_time = 0;
         function setPlayerStartingPosition(player) {
-
             if (video_start_time > 0) {
                 player.on('loadeddata', function (event) {
                     var instance = event.detail.plyr;
@@ -589,7 +570,6 @@
             xmlhttp.send();
         }
 
-
         document.addEventListener('DOMContentLoaded', (event) => {
             const video = document.getElementById('main-video');
             const loader = document.getElementById('loader');
@@ -606,7 +586,6 @@
                 loader.style.display = 'none';
             });
         });
-
 
         document.addEventListener("DOMContentLoaded", async function () {
             var video = document.querySelector("video");
@@ -772,8 +751,8 @@
                 });
 
                 setInterval(function () {
-                    Duration.postMessage(player.duration);
-                    CurrentDuration.postMessage(player.currentTime);
+                    window.Duration.postMessage(player.duration);
+                    window.CurrentDuration.postMessage(player.currentTime);
                     videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
 
@@ -1257,7 +1236,6 @@
         centerVertically();
         window.addEventListener("resize", centerVertically);
     </script>
-
 </body>
 
 </html>
