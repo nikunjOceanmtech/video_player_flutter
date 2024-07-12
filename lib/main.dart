@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:video_player_flutter/global.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 Future<void> main() async {
@@ -22,32 +21,25 @@ class WebViewScreen extends StatefulWidget {
 }
 
 class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserver {
-  final List<String> videos = [
-    "2e442126-bcdd-46c4-96be-4683cab9d8f5",
-    "29d0d68f-bc31-4c9b-bd6a-bcbc0c526382",
-    "f0b2c6bc-38c9-4049-8c7b-a09708f95d6c",
-    "64601abb-7fdc-4bf7-9cdd-fcdf4069ae7b",
-    "93879e07-badc-46c0-88eb-3622c963cae6",
-    "328b752b-c488-47b0-8203-ba002d20be63",
-    "759c85af-c027-4622-820a-54d9fb8a7a95",
-    "a3a483c0-5e5a-403a-ac45-140eb88bb869",
-    "867d1bf9-0968-4fed-9d24-f1979fcf19e4",
-    "64ed8c7c-daf3-4d15-ad7f-2095fa4efabb",
-    "673d7730-a277-45fa-8fff-ea1369765859",
-    "d789d391-054c-42dd-a4c9-6e7065e5bb65",
-    "01c8daad-3017-4d5c-8496-557e12c29034",
-    "5b0b1725-45d0-4135-ad50-ae66902e2f82",
-    "bae2612b-a1ad-4e0c-b3f9-22904258a16c",
-    "fd347769-aa48-42bd-ab7d-1656d5ff84aa",
-  ];
-
   Map<int, WebViewController?> controllers = {};
+  WebViewController? controller;
 
   int currentIndex = 0;
-  WebViewController? controller;
   int focusedIndex = 0;
   int reloadCounter = 0;
+
   bool isLoading = false;
+  bool isPlaying = false;
+  bool isIconShow = false;
+
+  double duration = 0;
+  double currentDuration = 0;
+
+  String htmlData = '';
+  String origionalHtmlData = '';
+  List<String> listOfQualities = [];
+  List<String> listOfSpeeds = ["0.2", "0.3", "0.5", "1"];
+  List<String> listOfSettingType = ["Qualitie", "Speed"];
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -58,6 +50,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         break;
       case AppLifecycleState.paused:
         await clearCache();
+        controllers[currentIndex]?.removeJavaScriptChannel("Duration");
+        // controllers[currentIndex]?.removeJavaScriptChannel("CurrentDuration");
+        controllers[currentIndex]?.removeJavaScriptChannel("Qualities");
         print("===================Paused Call");
         break;
       default:
@@ -77,6 +72,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   void dispose() {
     controllers.forEach(
       (key, value) {
+        value?.removeJavaScriptChannel("Duration");
+        value?.removeJavaScriptChannel("CurrentDuration");
+        value?.removeJavaScriptChannel("Qualities");
         value?.clearCache();
         value?.clearLocalStorage();
       },
@@ -84,9 +82,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  String htmlData = '';
-  String origionalHtmlData = '';
 
   Future<String> getHTMLString() async {
     if (htmlData.trim().isNotEmpty) {
@@ -131,6 +126,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     if (controllers.containsKey(index) && controllers[index] != null) {
       currentIndex = index;
       controller = controllers[index]!;
+      print("=======================");
       await controller!.addJavaScriptChannel(
         "Duration",
         onMessageReceived: (p0) {
@@ -144,6 +140,15 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         onMessageReceived: (p0) {
           currentDuration = double.tryParse(p0.message) ?? 0;
           setState(() {});
+        },
+      );
+      await controller!.addJavaScriptChannel(
+        "Qualities",
+        onMessageReceived: (p0) {
+          if (listOfQualities.isEmpty) {
+            listOfQualities.addAll(p0.message.split(','));
+            setState(() {});
+          }
         },
       );
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
@@ -163,6 +168,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   Future<void> stopControllerAtIndex(int index) async {
     if (controllers.containsKey(index) && controllers[index] != null) {
+      controllers[index]?.removeJavaScriptChannel("Duration");
+      controllers[index]?.removeJavaScriptChannel("CurrentDuration");
+      controllers[index]?.removeJavaScriptChannel("Qualities");
       await controllers[index]?.runJavaScript('flutterControl({ "command": "pause", "parameter": null });');
     }
   }
@@ -200,9 +208,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         ),
       );
   }
-
-  double duration = 0;
-  double currentDuration = 0;
 
   Future<void> _playNext(int index) async {
     /// Stop [index - 1] controller
@@ -279,9 +284,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     }
   }
 
-  String get userAgent =>
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36';
-
   @override
   Widget build(BuildContext context) {
     print("Controllers Length : ${controllers.length}");
@@ -316,7 +318,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                 },
                 itemBuilder: (context, index) {
                   return Stack(
-                    // fit: StackFit.expand,
                     children: [
                       controllers[index] == null
                           ? Center(child: CircularProgressIndicator())
@@ -331,34 +332,13 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                       playAndPauseButton(context: context),
                       volumeAndBackWordButton(context: context),
                       forwordButton(context: context),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          height: 80,
-                          child: Slider(
-                            value: currentDuration,
-                            max: duration,
-                            thumbColor: Colors.transparent,
-                            activeColor: Colors.amber,
-                            overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                            inactiveColor: Colors.red,
-                            secondaryActiveColor: Colors.amber,
-                            autofocus: false,
-                            onChanged: (value) async {
-                              await controller!.runJavaScript(
-                                'flutterControl({ "command": "seek", "parameter": $value });',
-                              );
-                              print("=============$value");
-                            },
-                          ),
-                        ),
-                      ),
+                      sliderView(),
+                      settingView(),
                     ],
                   );
                 },
               ),
       ),
-      // floatingActionButton: floatingButton(context: context),
     );
   }
 
@@ -413,7 +393,14 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   Widget volumeAndBackWordButton({required BuildContext context}) {
     return GestureDetector(
-      onVerticalDragUpdate: _onVerticalDragUpdate,
+      onVerticalDragUpdate: (details) async {
+        if (controller == null) return;
+        if (details.primaryDelta! < 0) {
+          await controller!.runJavaScript('flutterControl({ "command": "increaseVolume", "parameter": 0.01 });');
+        } else if (details.primaryDelta! > 0) {
+          await controller!.runJavaScript('flutterControl({ "command": "decreaseVolume", "parameter": 0.01 });');
+        }
+      },
       onTap: () async => await controller!.runJavaScript('flutterControl({ "command": "rewind", "parameter": 10 });'),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -442,17 +429,133 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Future<void> _onVerticalDragUpdate(DragUpdateDetails details) async {
-    if (controller == null) return;
-    if (details.primaryDelta! < 0) {
-      await controller!.runJavaScript('flutterControl({ "command": "increaseVolume", "parameter": 0.01 });');
-    } else if (details.primaryDelta! > 0) {
-      await controller!.runJavaScript('flutterControl({ "command": "decreaseVolume", "parameter": 0.01 });');
-    }
+  Widget sliderView() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: SizedBox(
+        height: 80,
+        child: Slider(
+          value: currentDuration,
+          max: duration,
+          thumbColor: Colors.transparent,
+          activeColor: Colors.amber,
+          overlayColor: WidgetStatePropertyAll(Colors.transparent),
+          inactiveColor: Colors.red,
+          secondaryActiveColor: Colors.amber,
+          autofocus: false,
+          onChanged: (value) async {
+            currentDuration = value;
+            setState(() {});
+            await controller!.runJavaScript('flutterControl({ "command": "seek", "parameter": $value });');
+          },
+        ),
+      ),
+    );
   }
 
-  bool isPlaying = false;
-  bool isIconShow = false;
+  Widget settingView() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: SizedBox(
+        height: 80,
+        width: 80,
+        child: MenuAnchor(
+          builder: (BuildContext context, MenuController controller, Widget? child) {
+            return IconButton(
+              onPressed: () {
+                popupType = PopupType.all;
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              icon: const Icon(Icons.settings, color: Colors.white),
+            );
+          },
+          style: MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+            shadowColor: WidgetStatePropertyAll(Colors.transparent),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+          ),
+          menuChildren: List<MenuItemButton>.generate(
+            popupType == PopupType.all
+                ? listOfSettingType.length
+                : popupType == PopupType.qualities
+                    ? listOfQualities.length + 1
+                    : popupType == PopupType.speed
+                        ? listOfSpeeds.length + 1
+                        : 0,
+            (int index) => MenuItemButton(
+              style: ButtonStyle(
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 10, vertical: 0)),
+                elevation: WidgetStatePropertyAll(10),
+                backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+                foregroundColor: WidgetStatePropertyAll(Colors.transparent),
+                overlayColor: WidgetStatePropertyAll(Colors.transparent),
+              ),
+              child: index == 0 && (popupType == PopupType.qualities || popupType == PopupType.speed)
+                  ? Container(
+                      color: Colors.white,
+                      height: 50,
+                      width: 120,
+                      alignment: Alignment.center,
+                      child: InkWell(
+                        onTap: () => setState(() => popupType = PopupType.all),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xff084277)),
+                            SizedBox(width: 10),
+                            Text(
+                              "Back",
+                              style: TextStyle(color: Color(0xff084277), fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: Colors.white,
+                      height: 50,
+                      width: 120,
+                      alignment: Alignment.center,
+                      child: InkWell(
+                        onTap: () async {
+                          if (popupType == PopupType.all) {
+                            if (listOfSettingType[index] == "Qualitie") {
+                              popupType = PopupType.qualities;
+                              setState(() {});
+                            } else if (listOfSettingType[index] == "Speed") {
+                              popupType = PopupType.speed;
+                              setState(() {});
+                            }
+                          } else if (popupType == PopupType.qualities) {
+                            await controller?.runJavaScript(
+                              'flutterControl({ "command": "qulitity", "parameter": ${listOfQualities[index - 1]} });',
+                            );
+                          }
+                        },
+                        child: Text(
+                          popupType == PopupType.all
+                              ? listOfSettingType[index]
+                              : popupType == PopupType.qualities
+                                  ? "${listOfQualities[index - 1]}p"
+                                  : popupType == PopupType.speed
+                                      ? listOfSpeeds[index - 1]
+                                      : "0",
+                          style: TextStyle(color: Color(0xff084277), fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PopupType popupType = PopupType.all;
 
   Future<void> _handleTap() async {
     if (controller == null) return;
@@ -464,27 +567,4 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   }
 }
 
-Future<void> clearCache() async {
-  try {
-    cleanUpMemory();
-    await DefaultCacheManager().emptyCache();
-    var tempDir = await getTemporaryDirectory();
-    await tempDir.delete(recursive: true);
-    var appDocDir = await getApplicationDocumentsDirectory();
-    await appDocDir.delete(recursive: true);
-    print("Cache cleared");
-  } catch (e) {
-    print("Error clearing cache: $e");
-  }
-}
-
-void cleanUpMemory() {
-  ImageCache imageCache = PaintingBinding.instance.imageCache;
-
-  if (imageCache.currentSizeBytes >= 55 << 20 || imageCache.currentSize >= 50) {
-    imageCache.clear();
-  }
-  if (imageCache.liveImageCount >= 20) {
-    imageCache.clearLiveImages();
-  }
-}
+enum PopupType { all, qualities, speed }

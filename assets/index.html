@@ -753,6 +753,8 @@
                 setInterval(function () {
                     window.Duration.postMessage(player.duration);
                     window.CurrentDuration.postMessage(player.currentTime);
+                    var data = hls.levels.map(function (l) { return l.height });
+                    window.Qualities.postMessage(data.join());
                     videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
 
@@ -1041,6 +1043,13 @@
                         else
                             player.currentTime = 10;
                     }
+                    else if (message.command == 'qulitity') {
+                        console.log("======================");
+                        if (message.parameter != null)
+                            updateQuality(message.parameter);
+                        else
+                            updateQuality(-1)
+                    }
                 };
             }
 
@@ -1207,16 +1216,16 @@
                 }
                 return routes;
             }
-            updateQuality(1);
+
             function updateQuality(newQuality) {
                 if (newQuality === -1) {
                     window.hls.currentLevel = -1; //Enable AUTO quality if option.value = -1
                 } else {
-                    console.log("==========", level);
+                    console.log("===============");
                     window.hls.levels.forEach(function (level, levelIndex) {
                         console.log("==========", level);
                         if (level.height === newQuality) {
-                            console.log("Found quality match with " + newQuality);
+                            console.log("==============Found quality match with " + newQuality);
                             window.hls.currentLevel = levelIndex;
                         }
                     });
