@@ -23,6 +23,7 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserver {
   Map<int, WebViewController?> controllers = {};
   WebViewController? controller;
+  PopupType popupType = PopupType.all;
 
   int currentIndex = 0;
   int focusedIndex = 0;
@@ -126,23 +127,25 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     if (controllers.containsKey(index) && controllers[index] != null) {
       currentIndex = index;
       controller = controllers[index]!;
-      print("=======================");
-      await controller!.addJavaScriptChannel(
+      duration = 0;
+      await controllers[index]!.addJavaScriptChannel(
         "Duration",
         onMessageReceived: (p0) {
+          print("===================Duration${p0.message}");
           if (duration == 0) {
             duration = double.tryParse(p0.message) ?? 0;
           }
         },
       );
-      await controller!.addJavaScriptChannel(
+      await controllers[index]!.addJavaScriptChannel(
         "CurrentDuration",
         onMessageReceived: (p0) {
+          print("===================CurrentDuration${p0.message}");
           currentDuration = double.tryParse(p0.message) ?? 0;
           setState(() {});
         },
       );
-      await controller!.addJavaScriptChannel(
+      await controllers[index]!.addJavaScriptChannel(
         "Qualities",
         onMessageReceived: (p0) {
           if (listOfQualities.isEmpty) {
@@ -453,6 +456,8 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
+  MenuController? menuController;
+
   Widget settingView() {
     return Align(
       alignment: Alignment.topRight,
@@ -463,7 +468,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
           builder: (BuildContext context, MenuController controller, Widget? child) {
             return IconButton(
               onPressed: () {
+                menuController = controller;
                 popupType = PopupType.all;
+                setState(() {});
                 if (controller.isOpen) {
                   controller.close();
                 } else {
@@ -534,6 +541,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                             await controller?.runJavaScript(
                               'flutterControl({ "command": "qulitity", "parameter": ${listOfQualities[index - 1]} });',
                             );
+                            menuController?.close();
                           }
                         },
                         child: Text(
@@ -554,8 +562,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       ),
     );
   }
-
-  PopupType popupType = PopupType.all;
 
   Future<void> _handleTap() async {
     if (controller == null) return;

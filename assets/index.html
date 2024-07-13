@@ -742,13 +742,9 @@
                     videoSessionTracker.OnPause();
                 });
 
-                player.on("seeked", function () {
+                player.on("seeked", function () { });
 
-                });
-
-                player.on("languagechange", function (e) {
-
-                });
+                player.on("languagechange", function (e) { });
 
                 setInterval(function () {
                     window.Duration.postMessage(player.duration);
@@ -1044,7 +1040,6 @@
                             player.currentTime = 10;
                     }
                     else if (message.command == 'qulitity') {
-                        console.log("======================");
                         if (message.parameter != null)
                             updateQuality(message.parameter);
                         else
@@ -1221,11 +1216,9 @@
                 if (newQuality === -1) {
                     window.hls.currentLevel = -1; //Enable AUTO quality if option.value = -1
                 } else {
-                    console.log("===============");
                     window.hls.levels.forEach(function (level, levelIndex) {
-                        console.log("==========", level);
                         if (level.height === newQuality) {
-                            console.log("==============Found quality match with " + newQuality);
+                            console.log("Found quality match with " + newQuality);
                             window.hls.currentLevel = levelIndex;
                         }
                     });
