@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 final List<String> videos = [
   "2e442126-bcdd-46c4-96be-4683cab9d8f5",
@@ -48,3 +49,19 @@ void cleanUpMemory() {
     imageCache.clearLiveImages();
   }
 }
+
+class WebViewModel {
+  WebViewController? webViewController;
+  double duration;
+  double currentDuration;
+  List<String> listOfQulitiy;
+
+  WebViewModel({
+    this.webViewController,
+    required this.duration,
+    required this.currentDuration,
+    required this.listOfQulitiy,
+  });
+}
+
+Color p1Color = Color(0xff084277);

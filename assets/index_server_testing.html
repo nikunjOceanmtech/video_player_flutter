@@ -2,45 +2,52 @@
 <html>
 
 <head>
-    <!-- JS -->
-    <!-- <script src="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.polyfilled.min.js"></script> -->
-    <script src="./plyr.polyfilled.min.js"></script>
+    <!--@formatter:off -->
+
+    <link href="https://assets.mediadelivery.net/rubik.css" rel="stylesheet">
     <script src="https://assets.mediadelivery.net/hls/1.5.10/hls.min.js"></script>
+
     <script src="https://assets.mediadelivery.net/rum.js"></script>
+
+    <script src="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.polyfilled.min.js"></script>
     <script src="https://assets.mediadelivery.net/plyr-plugin-thumbnail.js"></script>
     <script src="https://assets.mediadelivery.net/session-tracker/1.1.2/session-tracker.js"></script>
-    <script src="https://assets.mediadelivery.net/jquery/jquery-3.7.1.min.js" type="text/javascript"></script> <!-- 1-->
+    <script src="https://assets.mediadelivery.net/jquery/jquery-3.7.1.min.js" type="text/javascript"></script>
     <script src="https://assets.mediadelivery.net/chartist.min.js" type="text/javascript"></script>
-    <script src="https://assets.mediadelivery.net/plyr-vr.js" type="text/javascript"></script> <!-- 2-->
+    <script src="https://assets.mediadelivery.net/plyr-vr.js" type="text/javascript"></script>
+    <link href="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.css" rel="stylesheet">
+    <link href="https://assets.mediadelivery.net/plyr-vr.css" rel="stylesheet">
     <script src="https://assets.mediadelivery.net/pb.js?v=1"></script>
+    <link href="https://assets.mediadelivery.net/pb.css?v=1" rel="stylesheet">
     <script src="https://assets.mediadelivery.net/playerjs/pjs-implementation.js" type="text/javascript"></script>
     <script src="https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js" type="text/javascript"></script>
 
-    <!-- CSS -->
-    <link href="./index_1.css" rel="stylesheet">
-    <link href="https://assets.mediadelivery.net/rubik.css" rel="stylesheet">
-    <link href="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.css" rel="stylesheet">
-    <link href="https://assets.mediadelivery.net/plyr-vr.css" rel="stylesheet">
-    <link href="https://assets.mediadelivery.net/pb.css?v=1" rel="stylesheet">
+    <script src="/stream-bundle.js" type="text/javascript"></script>
+
+
     <link href="https://fonts.bunny.net/css?family=rubik" rel="stylesheet" />
 
-    <!-- Extra -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <meta name="description" content="" />
+
     <meta property="og:url"
-        content="https://iframe.mediadelivery.net/embed/84972/5b0b1725-45d0-4135-ad50-ae66902e2f82" />
+        content="https://iframe.mediadelivery.net/embed/84972/2e442126-bcdd-46c4-96be-4683cab9d8f5" />
     <meta property="og:image"
-        content="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg" />
+        content="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg" />
     <meta property="og:image:secure_url"
-        content="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg" />
+        content="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg" />
     <meta property="og:site_name" content="bunny.net" />
     <meta property="og:title" content="37 RS.mp4" />
     <meta property="og:description" content="" />
     <meta property="og:type" content="video.other" />
+
     <meta property="og:video:url"
-        content="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/play_720p.mp4" />
+        content="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/play_720p.mp4" />
     <meta property="og:video:secure_url"
-        content="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/play_720p.mp4" />
+        content="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/play_720p.mp4" />
+
     <meta property="og:video:type" content="text/html" />
     <meta property="og:video:width" content="1080">
     <meta property="og:video:height" content="1920">
@@ -50,32 +57,34 @@
     <meta name="twitter:card" content="player">
     <meta property="twitter:domain" content="bunny.net">
     <meta property="twitter:url"
-        content="https://iframe.mediadelivery.net/embed/84972/5b0b1725-45d0-4135-ad50-ae66902e2f82">
+        content="https://iframe.mediadelivery.net/embed/84972/2e442126-bcdd-46c4-96be-4683cab9d8f5">
     <meta name="twitter:title" content="37 RS.mp4">
     <meta name="twitter:description" content="">
     <meta name="twitter:image"
-        content="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg">
+        content="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg">
     <meta name="twitter:player"
-        content="https://iframe.mediadelivery.net/embed/84972/5b0b1725-45d0-4135-ad50-ae66902e2f82">
+        content="https://iframe.mediadelivery.net/embed/84972/2e442126-bcdd-46c4-96be-4683cab9d8f5">
     <meta name="twitter:player:width" content="1080">
     <meta name="twitter:player:height" content="1920">
 
 
 
 
-    <script type="application/ld+json"> {
+    <script type="application/ld+json">
+    {
         "@context": "https://schema.org",
         "@type": "VideoObject",
         "name": "37 RS.mp4",
         "description": "",
-        "thumbnailUrl": "https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg",
+        "thumbnailUrl": "https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg",
         "uploadDate": "2024-06-28T10:15:29.2420000+00:00",
         "duration": "PT37S",
-        "embedUrl": "https://iframe.mediadelivery.net/embed/84972/5b0b1725-45d0-4135-ad50-ae66902e2f82"
-    } </script>
+        "embedUrl": "https://iframe.mediadelivery.net/embed/84972/2e442126-bcdd-46c4-96be-4683cab9d8f5"
+    }
+</script>
 
 
-    <!-- <style>
+    <style>
         * {
             user-select: none;
             -webkit-user-select: none;
@@ -86,7 +95,7 @@
         }
 
         :root {
-            --plyr-color-main: #000;
+            --plyr-color-main: #ff7755;
             --plyr-video-background: transparent;
             --plyr-captions-background: #000;
             --plyr-captions-text-color: #fff;
@@ -128,7 +137,7 @@
         }
 
         .plyr__control--overlaid {
-            background: #000;
+            background: #ff7755;
             box-shadow: #4a4a4a20 0 0 27px;
         }
 
@@ -137,9 +146,11 @@
         }
 
         .plyr--video .plyr__control.plyr__tab-focus,
+
         .plyr--video .plyr__control:hover,
+
         .plyr--video .plyr__control[aria-expanded=true] {
-            background: #000;
+            background: #ff7755;
         }
 
         .plyr__control.plyr__tab-focus {
@@ -147,7 +158,7 @@
         }
 
         .plyr__menu__container .plyr__control[role=menuitemradio][aria-checked=true]::before {
-            background: #000;
+            background: #ff7755;
         }
 
         [data-plyr="captions"].plyr__control {
@@ -155,7 +166,7 @@
         }
 
         [data-plyr="captions"].plyr__control--pressed {
-            border-bottom: solid 3px #000;
+            border-bottom: solid 3px #ff7755;
         }
 
         .plyr__captions {
@@ -239,7 +250,7 @@
         .ct-series-a .ct-line,
         .ct-series-a .ct-point,
         .ct-series-a .ct-slice-donut {
-            stroke: #000;
+            stroke: #ff7755;
         }
 
         .plyr__pb {
@@ -388,6 +399,7 @@
         }
 
         .chromecast-connected {
+
             opacity: 1;
         }
 
@@ -449,7 +461,7 @@
                 transform: rotate(360deg);
             }
         }
-    </style> -->
+    </style>
 </head>
 
 <body id="body">
@@ -463,10 +475,10 @@
                     <stop offset="100%" stop-color="#ababab33"></stop>
                 </linearGradient>
                 <linearGradient id="gradient-active" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#000af"></stop>
-                    <stop offset="30%" stop-color="#0008f"></stop>
-                    <stop offset="70%" stop-color="#0003f"></stop>
-                    <stop offset="100%" stop-color="#00013"></stop>
+                    <stop offset="0%" stop-color="#ff7755af"></stop>
+                    <stop offset="30%" stop-color="#ff77558f"></stop>
+                    <stop offset="70%" stop-color="#ff77553f"></stop>
+                    <stop offset="100%" stop-color="#ff775513"></stop>
                 </linearGradient>
             </defs>
         </svg>
@@ -476,14 +488,14 @@
         </div>
 
         <video id="main-video" preload="auto" crossorigin playsinline loop
-            data-poster="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg">
-            <source src="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/playlist.m3u8">
+            data-poster="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg">
+            <source src="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/playlist.m3u8">
         </video>
 
         <!-- <video id="main-video" preload="auto" crossorigin autoplay loop muted
             data-plyr-config='{ "title": "37 RS.mp4" }' playsinline
-            data-poster="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg">
-            <source src="https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/playlist.m3u8">
+            data-poster="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg">
+            <source src="https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/playlist.m3u8">
         </video> -->
     </div>
     <script type="text/javascript">
@@ -507,7 +519,7 @@
             offsetX: 0,
             offsetY: 0,
             urls: [
-                'https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/seek/_0.jpg',
+                'https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/seek/_0.jpg',
             ]
         }
 
@@ -547,7 +559,7 @@
             "mediadelivery.net",
             "video-1223.mediadelivery.net",
             84972,
-            "5b0b1725-45d0-4135-ad50-ae66902e2f82",
+            "2e442126-bcdd-46c4-96be-4683cab9d8f5",
             "1223"
         );
 
@@ -592,8 +604,8 @@
             var useFairplayHlsJs = false;
             var isEntDrm = false;
             var playOriginal = false;
-            var originalUrl = 'https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/original';
-            var urlPlaylistUrl = 'https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/playlist.m3u8';
+            var originalUrl = 'https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/original';
+            var urlPlaylistUrl = 'https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/playlist.m3u8';
             var isHlsSupported = (!isFairplay || useFairplayHlsJs) && Hls.isSupported();
             var source = video.getElementsByTagName("source")[0].src;
             var isAdPaused = false;
@@ -622,7 +634,7 @@
                                 }
 
                                 cjs.cast(castUrl, {
-                                    poster: 'https://vz-352e339f-24b.b-cdn.net/5b0b1725-45d0-4135-ad50-ae66902e2f82/thumbnail.jpg',
+                                    poster: 'https://vz-352e339f-24b.b-cdn.net/2e442126-bcdd-46c4-96be-4683cab9d8f5/thumbnail.jpg',
                                     title: '37 RS.mp4',
                                     subtitles: []
                                 })
@@ -738,22 +750,15 @@
                     videoSessionTracker.OnPause();
                 });
 
-                player.on("seeked", function () {
+                player.on("seeked", function () { });
 
-                });
-
-                player.on("languagechange", function (e) {
-
-                });
+                player.on("languagechange", function (e) { });
 
                 setInterval(function () {
-                    if (!video.paused) {
-                        window.Duration.postMessage(player.duration);
-                        window.CurrentDuration.postMessage(player.currentTime);
-                        var data = hls.levels.map(function (l) { return l.height });
-                        window.Qualities.postMessage(data.join());
-                        videoSessionTracker.OnProgress(player.currentTime);
-                    }
+                    // if (!video.paused) {
+                    //     window.CurrentDuration.postMessage(player.currentTime);
+                    // }
+                    videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
 
                 /* Progress bar */
@@ -764,7 +769,7 @@
                 $(".plyr__progress__container progress").css("opacity", "0.01");
                 $(".plyr__progress").prepend($('<div class="plyr__pb"></div>'));
                 var pb = new PB(".plyr__pb", ".plyr__progress__container input", {
-                    keyColor: "#000",
+                    keyColor: "#ff7755",
                     videoLength: 37,
                     chapters: [
 
@@ -823,6 +828,7 @@
                         }
                     }
                     else {
+                        // window.Duration.postMessage(player.duration);
                         subscribeAdManagerEvent();
                     }
                 });
@@ -859,7 +865,7 @@
                 window.sendEvent = function sendEvent(name) {
                     window.parent.postMessage({
                         channel: "bunnystream",
-                        video: "5b0b1725-45d0-4135-ad50-ae66902e2f82",
+                        video: "2e442126-bcdd-46c4-96be-4683cab9d8f5",
                         event: name,
                         status: getStatusObject(),
                     }, '*');
@@ -958,6 +964,9 @@
                 var pjs = new BunnyPlayerJs(player);
                 pjs.init();
 
+                // player.speed = 4;
+                // console.log(player.speed);
+
                 window.flutterControl = function (e) {
                     var message = e;
                     if (message.command == 'activate') {
@@ -967,6 +976,13 @@
                         player.pause();
                     }
                     else if (message.command == 'play') {
+                        setInterval(function () {
+                            if (!video.paused) {
+                                window.CurrentDuration.postMessage(player.currentTime);
+                                window.Duration.postMessage(player.duration);
+                            }
+                        }, 1000);
+                        console.log("=============================Hello");
                         player.play();
                     }
                     else if (message.command == 'togglePlay') {
@@ -1047,6 +1063,12 @@
                         else
                             updateQuality(-1)
                     }
+                    else if (message.command == 'speed') {
+                        if (message.parameter != null)
+                            player.speed = message.parameter;
+                        else
+                            player.speed = 1;
+                    }
                 };
             }
 
@@ -1071,7 +1093,6 @@
                     function (event, data) {
                         if (data.audioTracks && data.audioTracks.length) {
                             const languageOptions = Array.from(new Set(data.audioTracks.map(a => a.name)));
-                            console.log(languageOptions);
                             defaultOptions.audioTrack = {
                                 options: languageOptions,
                                 selected: languageOptions[0],
@@ -1102,14 +1123,12 @@
                         var availableQualities = hls.levels.map(function (l) { return l.height });
                         availableQualities.unshift(-1)
 
-
                         defaultOptions.quality = {
                             default: -1,
                             options: availableQualities,
                             forced: true,
                             onChange: function (e) { updateQuality(e); },
                         }
-
                         defaultOptions.i18n["qualityLabel"] = { "-1": "Auto" };
 
                         player = new Plyr(video, defaultOptions);

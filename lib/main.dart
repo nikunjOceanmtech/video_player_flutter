@@ -37,8 +37,8 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   String htmlData = '';
   String origionalHtmlData = '';
   List<String> listOfQualities = ["352", "640", "842", "1280", "1920"];
-  List<String> listOfSpeeds = ["0.2", "0.3", "0.5", "1"];
-  List<String> listOfSettingType = ["Qualitie"];
+  List<String> listOfSpeeds = ["0.5", "0.75", "1", "1.25", "1.5", "1.75", "2", "4"];
+  List<String> listOfSettingType = ["Qualitie", "Speed"];
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -183,12 +183,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
           onProgress: (int progress) {
             // Update loading bar.
           },
-          onPageStarted: (String url) {
-            isLoading = true;
-          },
+          onPageStarted: (String url) {},
           onPageFinished: (String url) {
             print("loading completed index : $index");
-            isLoading = false;
           },
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
@@ -321,8 +318,17 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                       playAndPauseButton(context: context),
                       volumeAndBackWordButton(context: context),
                       forwordButton(context: context),
-                      sliderView(),
+                      // sliderView(),
                       settingView(),
+                      isLoading
+                          ? Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              color: p1Color.withOpacity(0.2),
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(),
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   );
                 },
@@ -498,11 +504,11 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xff084277)),
+                            Icon(Icons.arrow_back_ios_new_rounded, color: p1Color),
                             SizedBox(width: 10),
                             Text(
                               "Back",
-                              style: TextStyle(color: Color(0xff084277), fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: p1Color, fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -528,6 +534,12 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                               'flutterControl({ "command": "qulitity", "parameter": ${listOfQualities[index - 1]} });',
                             );
                             menuController?.close();
+                          } else if (popupType == PopupType.speed) {
+                            print("================");
+                            await controller?.runJavaScript(
+                              'flutterControl({ "command": "speed", "parameter": ${listOfSpeeds[index - 1]} });',
+                            );
+                            menuController?.close();
                           }
                         },
                         child: Text(
@@ -536,9 +548,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                               : popupType == PopupType.qualities
                                   ? "${listOfQualities[index - 1]}p"
                                   : popupType == PopupType.speed
-                                      ? listOfSpeeds[index - 1]
+                                      ? "${listOfSpeeds[index - 1]}x"
                                       : "0",
-                          style: TextStyle(color: Color(0xff084277), fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: p1Color, fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
