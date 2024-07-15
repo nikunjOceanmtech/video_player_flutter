@@ -1,5 +1,3 @@
-// ignore_for_file: dead_code, avoid_print
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -38,9 +36,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   String htmlData = '';
   String origionalHtmlData = '';
-  List<String> listOfQualities = [];
+  List<String> listOfQualities = ["352", "640", "842", "1280", "1920"];
   List<String> listOfSpeeds = ["0.2", "0.3", "0.5", "1"];
-  List<String> listOfSettingType = ["Qualitie", "Speed"];
+  List<String> listOfSettingType = ["Qualitie"];
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -52,8 +50,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       case AppLifecycleState.paused:
         await clearCache();
         controllers[currentIndex]?.removeJavaScriptChannel("Duration");
-        // controllers[currentIndex]?.removeJavaScriptChannel("CurrentDuration");
-        controllers[currentIndex]?.removeJavaScriptChannel("Qualities");
         print("===================Paused Call");
         break;
       default:
@@ -145,15 +141,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
           setState(() {});
         },
       );
-      await controllers[index]!.addJavaScriptChannel(
-        "Qualities",
-        onMessageReceived: (p0) {
-          if (listOfQualities.isEmpty) {
-            listOfQualities.addAll(p0.message.split(','));
-            setState(() {});
-          }
-        },
-      );
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
       print('🚀🚀🚀 INITIALIZED Playing Index : $index}');
       Future.delayed(Duration.zero, () => setState(() {}));
@@ -173,7 +160,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     if (controllers.containsKey(index) && controllers[index] != null) {
       controllers[index]?.removeJavaScriptChannel("Duration");
       controllers[index]?.removeJavaScriptChannel("CurrentDuration");
-      controllers[index]?.removeJavaScriptChannel("Qualities");
       await controllers[index]?.runJavaScript('flutterControl({ "command": "pause", "parameter": null });');
     }
   }

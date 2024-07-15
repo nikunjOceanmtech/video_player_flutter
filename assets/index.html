@@ -747,10 +747,9 @@
                 player.on("languagechange", function (e) { });
 
                 setInterval(function () {
-                    window.Duration.postMessage(player.duration);
-                    window.CurrentDuration.postMessage(player.currentTime);
-                    var data = hls.levels.map(function (l) { return l.height });
-                    window.Qualities.postMessage(data.join());
+                    if (!video.paused) {
+                        window.CurrentDuration.postMessage(player.currentTime);
+                    }
                     videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
 
@@ -821,6 +820,7 @@
                         }
                     }
                     else {
+                        window.Duration.postMessage(player.duration);
                         subscribeAdManagerEvent();
                     }
                 });

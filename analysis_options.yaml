@@ -12,6 +12,9 @@ analyzer:
     depend_on_referenced_packages: ignore
     prefer_const_constructors: ignore
     prefer_const_literals_to_create_immutables: ignore
+    dead_code: ignore
+    avoid_print: ignore
+    
 include: package:flutter_lints/flutter.yaml
 
 linter:
