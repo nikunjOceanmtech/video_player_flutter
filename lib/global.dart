@@ -22,6 +22,8 @@ final List<String> videos = [
   "fd347769-aa48-42bd-ab7d-1656d5ff84aa",
 ];
 
+enum PopupType { all, qualities, speed }
+
 String get userAgent =>
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36';
 

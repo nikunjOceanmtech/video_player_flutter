@@ -22,6 +22,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   Map<int, WebViewController?> controllers = {};
   WebViewController? controller;
   PopupType popupType = PopupType.all;
+  MenuController? menuController;
 
   int currentIndex = 0;
   int focusedIndex = 0;
@@ -39,6 +40,8 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   List<String> listOfQualities = ["352", "640", "842", "1280", "1920"];
   List<String> listOfSpeeds = ["0.5", "0.75", "1", "1.25", "1.5", "1.75", "2", "4"];
   List<String> listOfSettingType = ["Qualitie", "Speed"];
+  List<double> l1 = [];
+  List<double> l2 = [];
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -84,7 +87,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     if (htmlData.trim().isNotEmpty) {
       return htmlData;
     }
-    htmlData = await rootBundle.loadString('assets/index.html');
+    htmlData = await rootBundle.loadString('assets/final_player/index.html');
     return htmlData;
   }
 
@@ -124,23 +127,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       currentIndex = index;
       controller = controllers[index]!;
       duration = 0;
-      await controllers[index]!.addJavaScriptChannel(
-        "Duration",
-        onMessageReceived: (p0) {
-          print("===================Duration${p0.message}");
-          if (duration == 0) {
-            duration = double.tryParse(p0.message) ?? 0;
-          }
-        },
-      );
-      await controllers[index]!.addJavaScriptChannel(
-        "CurrentDuration",
-        onMessageReceived: (p0) {
-          print("===================CurrentDuration${p0.message}");
-          currentDuration = double.tryParse(p0.message) ?? 0;
-          setState(() {});
-        },
-      );
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
       print('🚀🚀🚀 INITIALIZED Playing Index : $index}');
       Future.delayed(Duration.zero, () => setState(() {}));
@@ -283,15 +269,17 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
             : PageView.builder(
                 itemCount: controllers.length,
                 scrollDirection: Axis.vertical,
-                onPageChanged: (value) {
-                  int tempIndex = value;
+                onPageChanged: (index) async {
+                  int tempIndex = index;
+
+                  print("===============");
 
                   if ((tempIndex == currentIndex) || (tempIndex < 0)) {
-                    print("Already Loaded");
+                    print("=====================1Already Loaded");
                     return;
                   }
                   if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
-                    print("Already Loaded");
+                    print("====================2Already Loaded");
                     return;
                   }
 
@@ -318,7 +306,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                       playAndPauseButton(context: context),
                       volumeAndBackWordButton(context: context),
                       forwordButton(context: context),
-                      // sliderView(),
+                      sliderView(index: index),
                       settingView(),
                       isLoading
                           ? Container(
@@ -424,7 +412,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget sliderView() {
+  Widget sliderView({required int index}) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
@@ -447,8 +435,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       ),
     );
   }
-
-  MenuController? menuController;
 
   Widget settingView() {
     return Align(
@@ -569,6 +555,24 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     isPlaying = !isPlaying;
     await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
   }
-}
 
-enum PopupType { all, qualities, speed }
+  Future<void> loadDuration({required WebViewController? controller}) async {
+    await controller?.addJavaScriptChannel(
+      "Duration",
+      onMessageReceived: (value) {
+        print("===================Duration${value.message}");
+        if (duration == 0) {
+          duration = double.tryParse(value.message) ?? 0;
+        }
+      },
+    );
+    await controller?.addJavaScriptChannel(
+      "CurrentDuration",
+      onMessageReceived: (value) {
+        print("===================CurrentDuration${value.message}");
+        currentDuration = double.tryParse(value.message) ?? 0;
+        setState(() {});
+      },
+    );
+  }
+}
