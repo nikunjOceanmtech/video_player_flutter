@@ -579,6 +579,9 @@
             });
         });
 
+        var Duration = 0;
+        var CurrentDuration = 0;
+
         document.addEventListener("DOMContentLoaded", async function () {
             var video = document.querySelector("video");
             var fragmentsLoaded = 0;
@@ -739,10 +742,8 @@
                 player.on("languagechange", function (e) { });
 
                 setInterval(function () {
-                    if (!video.paused) {
-                        window.Duration.postMessage(player.duration);
-                        window.CurrentDuration.postMessage(player.currentTime);
-                    }
+                    window.Duration.postMessage(player.duration);
+                    window.CurrentDuration.postMessage(player.currentTime);
                     videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
 
