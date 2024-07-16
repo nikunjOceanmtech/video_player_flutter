@@ -306,7 +306,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                       playAndPauseButton(context: context),
                       volumeAndBackWordButton(context: context),
                       forwordButton(context: context),
-                      sliderView(index: index),
+                      // sliderView(index: index),
                       settingView(),
                       isLoading
                           ? Container(
@@ -500,34 +500,33 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                         ),
                       ),
                     )
-                  : Container(
-                      color: Colors.white,
-                      height: 50,
-                      width: 120,
-                      alignment: Alignment.center,
-                      child: InkWell(
-                        onTap: () async {
-                          if (popupType == PopupType.all) {
-                            if (listOfSettingType[index] == "Qualitie") {
-                              popupType = PopupType.qualities;
-                              setState(() {});
-                            } else if (listOfSettingType[index] == "Speed") {
-                              popupType = PopupType.speed;
-                              setState(() {});
-                            }
-                          } else if (popupType == PopupType.qualities) {
-                            await controller?.runJavaScript(
-                              'flutterControl({ "command": "qulitity", "parameter": ${listOfQualities[index - 1]} });',
-                            );
-                            menuController?.close();
-                          } else if (popupType == PopupType.speed) {
-                            print("================");
-                            await controller?.runJavaScript(
-                              'flutterControl({ "command": "speed", "parameter": ${listOfSpeeds[index - 1]} });',
-                            );
-                            menuController?.close();
+                  : InkWell(
+                      onTap: () async {
+                        if (popupType == PopupType.all) {
+                          if (listOfSettingType[index] == "Qualitie") {
+                            popupType = PopupType.qualities;
+                            setState(() {});
+                          } else if (listOfSettingType[index] == "Speed") {
+                            popupType = PopupType.speed;
+                            setState(() {});
                           }
-                        },
+                        } else if (popupType == PopupType.qualities) {
+                          await controller?.runJavaScript(
+                            'flutterControl({ "command": "qulitity", "parameter": ${listOfQualities[index - 1]} });',
+                          );
+                          menuController?.close();
+                        } else if (popupType == PopupType.speed) {
+                          await controller?.runJavaScript(
+                            'flutterControl({ "command": "speed", "parameter": ${listOfSpeeds[index - 1]} });',
+                          );
+                          menuController?.close();
+                        }
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        height: 50,
+                        width: 120,
+                        alignment: Alignment.center,
                         child: Text(
                           popupType == PopupType.all
                               ? listOfSettingType[index]
