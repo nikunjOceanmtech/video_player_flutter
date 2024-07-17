@@ -15,7 +15,7 @@ class _HomeScreenState extends HomeWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: screenView(context: context),
-      floatingActionButton: floatingButton(context: context),
+      // floatingActionButton: floatingButton(context: context),
     );
   }
 }

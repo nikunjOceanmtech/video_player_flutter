@@ -26,11 +26,8 @@ abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver 
   String htmlData = '';
   String origionalHtmlData = '';
   List<String> listOfQualities = ["352", "640", "842", "1280", "1920"];
-  List<String> listOfSpeeds = ["0.5", "0.75", "1", "1.25", "1.5", "1.75", "2", "4"];
+  List<String> listOfSpeeds = ["0.5", "0.75", "1", "1.25", "1.5", "1.75", "2"];
   List<String> listOfSettingType = ["Qualitie", "Speed"];
-  List<double> l1 = [];
-  List<double> l2 = [];
-
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
@@ -327,7 +324,7 @@ abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver 
               playAndPauseButton(context: context),
               volumeAndBackWordButton(context: context),
               forwordButton(context: context),
-              // sliderView(index: index),
+              sliderView(index: index),
               settingView(),
               isLoading
                   ? Container(
@@ -354,9 +351,6 @@ abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver 
           width: 100,
           child: FloatingActionButton(
             onPressed: () async {
-              // js.context.callMethod("hello");
-              // if (controller == null) return;
-              // await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
               print("=============${await controllers[currentIndex]?.currentUrl()}");
               await loadDuration(controller: controllers[currentIndex], index: currentIndex);
               print("=====================Duarion = $duration >>>>>>>>> Current Durarion = $currentDuration");
