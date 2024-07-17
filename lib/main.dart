@@ -40,8 +40,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   List<String> listOfQualities = ["352", "640", "842", "1280", "1920"];
   List<String> listOfSpeeds = ["0.5", "0.75", "1", "1.25", "1.5", "1.75", "2", "4"];
   List<String> listOfSettingType = ["Qualitie", "Speed"];
-  List<double> l1 = [];
-  List<double> l2 = [];
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
