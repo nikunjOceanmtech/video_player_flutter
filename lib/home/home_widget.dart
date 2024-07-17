@@ -71,6 +71,8 @@ abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver 
     super.dispose();
   }
 
+  // PROGRAMMING part
+
   Future<String> getHTMLString() async {
     if (htmlData.trim().isNotEmpty) {
       return htmlData;
@@ -276,7 +278,7 @@ abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver 
     await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
   }
 
-  //
+  // UI part
 
   Widget screenView({required BuildContext context}) {
     if (controllers.isEmpty) {
