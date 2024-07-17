@@ -5,33 +5,25 @@
     <!--@formatter:off -->
 
     <link href="https://assets.mediadelivery.net/rubik.css" rel="stylesheet">
+    <link href="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.css" rel="stylesheet">
+    <link href="https://assets.mediadelivery.net/plyr-vr.css" rel="stylesheet">
+    <link href="https://assets.mediadelivery.net/pb.css?v=1" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=rubik" rel="stylesheet" />
+
     <script src="https://assets.mediadelivery.net/hls/1.5.10/hls.min.js"></script>
-
     <script src="https://assets.mediadelivery.net/rum.js"></script>
-
     <script src="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.polyfilled.min.js"></script>
     <script src="https://assets.mediadelivery.net/plyr-plugin-thumbnail.js"></script>
     <script src="https://assets.mediadelivery.net/session-tracker/1.1.2/session-tracker.js"></script>
     <script src="https://assets.mediadelivery.net/jquery/jquery-3.7.1.min.js" type="text/javascript"></script>
     <script src="https://assets.mediadelivery.net/chartist.min.js" type="text/javascript"></script>
     <script src="https://assets.mediadelivery.net/plyr-vr.js" type="text/javascript"></script>
-    <link href="https://assets.mediadelivery.net/plyr/3.7.8.1-bn/plyr.css" rel="stylesheet">
-    <link href="https://assets.mediadelivery.net/plyr-vr.css" rel="stylesheet">
     <script src="https://assets.mediadelivery.net/pb.js?v=1"></script>
-    <link href="https://assets.mediadelivery.net/pb.css?v=1" rel="stylesheet">
     <script src="https://assets.mediadelivery.net/playerjs/pjs-implementation.js" type="text/javascript"></script>
     <script src="https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js" type="text/javascript"></script>
 
-    <script src="/stream-bundle.js" type="text/javascript"></script>
-
-
-    <link href="https://fonts.bunny.net/css?family=rubik" rel="stylesheet" />
-
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta name="description" content="" />
-
     <meta property="og:url" content="https://iframe.mediadelivery.net/embed/84972/{{videoid}}" />
     <meta property="og:image" content="https://vz-352e339f-24b.b-cdn.net/{{videoid}}/thumbnail.jpg" />
     <meta property="og:image:secure_url" content="https://vz-352e339f-24b.b-cdn.net/{{videoid}}/thumbnail.jpg" />
@@ -73,21 +65,15 @@
         "duration": "PT37S",
         "embedUrl": "https://iframe.mediadelivery.net/embed/84972/{{videoid}}"
     }
-</script>
-
+    </script>
 
     <style>
         * {
             user-select: none;
-            /* supported by Chrome and Opera */
             -webkit-user-select: none;
-            /* Safari */
             -khtml-user-select: none;
-            /* Konqueror HTML */
             -moz-user-select: none;
-            /* Firefox */
             -ms-user-select: none;
-            /* Internet Explorer/Edge */
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
 
@@ -115,13 +101,12 @@
         }
 
         body {
-            background-color: transparent;
-
+            background-color: #000;
             font-family: 'rubik', sans-serif;
-
         }
 
         .container {
+            background-color: #000;
             width: 100%;
             height: 100%;
         }
@@ -145,7 +130,9 @@
         }
 
         .plyr--video .plyr__control.plyr__tab-focus,
+
         .plyr--video .plyr__control:hover,
+
         .plyr--video .plyr__control[aria-expanded=true] {
             background: #ff7755;
         }
@@ -196,7 +183,6 @@
 
         .plyr__progress input {
             border-radius: 0px !important;
-            -webkit-appearance: none;
             background: transparent;
         }
 
@@ -238,6 +224,7 @@
         }
 
         .ct-series-a .ct-area,
+
         .ct-series-a .ct-slice-donut-solid,
         .ct-series-a .ct-slice-pie {
             fill: url(#gradient-a);
@@ -376,18 +363,15 @@
             transition: none;
         }
 
-        /*workaround to fix safari bug with not showing video thumbnail:*/
         .plyr__video-wrapper {
             z-index: 0;
         }
 
-        /* fix for vertical subtitles scrolling */
         .plyr__menu__container>div {
             max-height: 50vh;
             overflow-y: auto;
         }
 
-        /* Fix for controls overlapping on small devices */
         @media only screen and (max-width: 500px) {
             .hide_mobile.plyr__spacer {
                 display: none
@@ -398,7 +382,6 @@
             min-width: 32px;
         }
 
-        /* Chromecast */
         .chromecast-connected {
 
             opacity: 1;
@@ -463,9 +446,6 @@
             }
         }
     </style>
-
-
-
 </head>
 
 <body id="body">
@@ -502,9 +482,8 @@
             <source src="https://vz-352e339f-24b.b-cdn.net/{{videoid}}/playlist.m3u8">
         </video> -->
     </div>
-    <script>
-
-        var shouldAutoplay = '{{autoplay}}'; // Change this to false to disable autoplay
+    <script type="text/javascript">
+        var shouldAutoplay = '{{autoplay}}';
 
         var videoElement = document.getElementById('main-video');
 
@@ -514,14 +493,13 @@
         }
 
         var thumbnail_width = 300;
-
         var seek_thumbnail_config = {
             enabled: true,
-            pic_num: 18,// total thumbnail numbers
-            width: thumbnail_width,// per thumbnail item width
-            height: thumbnail_width * 9 / 16, // default height
-            col: 6,// per thumbnail image columns
-            row: 6,// per thumbnail image rows
+            pic_num: 18,
+            width: thumbnail_width,
+            height: thumbnail_width * 9 / 16,
+            col: 6,
+            row: 6,
             offsetX: 0,
             offsetY: 0,
             urls: [
@@ -550,7 +528,6 @@
 
         var video_start_time = 0;
         function setPlayerStartingPosition(player) {
-
             if (video_start_time > 0) {
                 player.on('loadeddata', function (event) {
                     var instance = event.detail.plyr;
@@ -585,7 +562,6 @@
             xmlhttp.send();
         }
 
-
         document.addEventListener('DOMContentLoaded', (event) => {
             const video = document.getElementById('main-video');
             const loader = document.getElementById('loader');
@@ -603,6 +579,8 @@
             });
         });
 
+        var Duration = 0;
+        var CurrentDuration = 0;
 
         document.addEventListener("DOMContentLoaded", async function () {
             var video = document.querySelector("video");
@@ -759,23 +737,15 @@
                     videoSessionTracker.OnPause();
                 });
 
-                player.on("seeked", function () {
+                player.on("seeked", function () { });
 
-                });
-
-                player.on("languagechange", function (e) {
-
-                });
-
+                player.on("languagechange", function (e) { });
 
                 setInterval(function () {
+                    window.Duration.postMessage(player.duration);
+                    window.CurrentDuration.postMessage(player.currentTime);
                     videoSessionTracker.OnProgress(player.currentTime);
                 }, 900);
-
-
-
-                /* VR */
-
 
                 /* Progress bar */
                 var scrubbingPaused = false;
@@ -793,12 +763,12 @@
                     moments: [
 
                     ],
-                    onScrubbingChange: function (seekTime, offset) {
-                        var thumbWidth = $(".plyr__preview-thumb").width();
-                        var position = Math.max(thumbWidth / 2, offset);
-                        position = Math.min($(".plyr__controls").width() - $(".plyr__preview-thumb").width() + (thumbWidth / 4), position);
-                        $(".plyr__preview-thumb").css("left", (position - 5.5) + "px");
-                    }
+                    // onScrubbingChange: function (seekTime, offset) {
+                    //     var thumbWidth = $(".plyr__preview-thumb").width();
+                    //     var position = Math.max(thumbWidth / 2, offset);
+                    //     position = Math.min($(".plyr__controls").width() - $(".plyr__preview-thumb").width() + (thumbWidth / 4), position);
+                    //     $(".plyr__preview-thumb").css("left", (position - 5.5) + "px");
+                    // }
                 });
 
                 function subscribeAdManagerEvent() {
@@ -1056,16 +1026,26 @@
                         else
                             player.rewind();
                     }
+                    else if (message.command == 'seek') {
+                        if (message.parameter != null)
+                            player.currentTime = message.parameter;
+                        else
+                            player.currentTime = 10;
+                    }
+                    else if (message.command == 'qulitity') {
+                        if (message.parameter != null)
+                            updateQuality(message.parameter);
+                        else
+                            updateQuality(-1)
+                    }
+                    else if (message.command == 'speed') {
+                        if (message.parameter != null)
+                            player.speed = message.parameter;
+                        else
+                            player.speed = 1;
+                    }
                 };
-
-
             }
-
-            function generateDrmRequest(initDataType, initData, keyContext) {
-                //console.log(initDataType, initData, keyContext);
-                return { initDataType: initDataType, initData: initData };
-            }
-
 
             if (isHlsSupported) {
                 var premiumProbingVideos = new Map();
@@ -1083,64 +1063,56 @@
                 var hls = new Hls(hlsConfig);
                 hls.loadSource(source);
 
-                // From the m3u8 playlist, hls parses the manifest and returns
-                // all available video qualities. This is important, in this approach,
-                // we will have one source on the Plyr player.
-                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                    if (data.audioTracks && data.audioTracks.length) {
-                        const languageOptions = Array.from(new Set(data.audioTracks.map(a => a.name)));
+                hls.on(
+                    Hls.Events.MANIFEST_PARSED,
+                    function (event, data) {
+                        if (data.audioTracks && data.audioTracks.length) {
+                            const languageOptions = Array.from(new Set(data.audioTracks.map(a => a.name)));
+                            console.log(languageOptions);
+                            defaultOptions.audioTrack = {
+                                options: languageOptions,
+                                selected: languageOptions[0],
+                                onChange: (e) => {
+                                    let index = hls.audioTracks.findLastIndex(x => x.name == e);
+                                    if (index < 0)
+                                        index = 0;
+                                    hls.audioTrack = index;
+                                },
+                                showUnrecognizedLabel: false,
+                            };
 
-                        defaultOptions.audioTrack = {
-                            options: languageOptions, // array of strings,
-                            selected: languageOptions[0],
-                            onChange: (e) => {
-                                let index = hls.audioTracks.findLastIndex(x => x.name == e);
-                                if (index < 0)
-                                    index = 0;
-                                hls.audioTrack = index;
-                            }, // e is value of the selected label (string)
-                            showUnrecognizedLabel: false, // if you want to show 'Unrecognized (en)' (if not defined in i18n) instead of 'en'
-                        };
-
-                        hls.audioTrack = 0;
-                    }
-
-                    if (window.hls.currentLevel == -1) {
-                        // Auto
-                        if (hls.levels.length == 1) {
-                            window.hls.currentLevel = 0;
+                            hls.audioTrack = 0;
                         }
-                        else if (hls.levels.length == 2) {
-                            window.hls.currentLevel = 1;
+
+                        if (window.hls.currentLevel == -1) {
+                            if (hls.levels.length == 1) {
+                                window.hls.currentLevel = 0;
+                            }
+                            else if (hls.levels.length == 2) {
+                                window.hls.currentLevel = 1;
+                            }
+                            else {
+                                window.hls.currentLevel = 2;
+                            }
                         }
-                        else {
-                            // Load Loweset quality
-                            window.hls.currentLevel = 2;
+
+                        var availableQualities = hls.levels.map(function (l) { return l.height });
+                        availableQualities.unshift(-1)
+
+                        defaultOptions.quality = {
+                            default: -1,
+                            options: availableQualities,
+                            forced: true,
+                            onChange: function (e) { updateQuality(e); },
                         }
-                    }
 
-                    // Transform available levels into an array of integers (height values).
-                    var availableQualities = hls.levels.map(function (l) { return l.height });
-                    availableQualities.unshift(-1) //prepend -1 (auto) to quality array;
+                        defaultOptions.i18n["qualityLabel"] = { "-1": "Auto" };
 
-                    // Add new qualities to option
-                    defaultOptions.quality = {
-                        default: -1,
-                        options: availableQualities,
-                        // this ensures Plyr to use Hls to update quality level
-                        forced: true,
-                        onChange: function (e) { updateQuality(e); },
-                    }
+                        player = new Plyr(video, defaultOptions);
+                        initPlayer();
+                    },
 
-                    defaultOptions.i18n["qualityLabel"] = { "-1": "Auto" };
-
-                    // Initialize here
-                    player = new Plyr(video, defaultOptions);
-                    initPlayer();
-
-
-
-                });
+                );
 
                 hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
                     var span = document.querySelector(".plyr__controls [data-plyr='quality'][value='-1'] span")
@@ -1251,22 +1223,7 @@
                     });
                 }
             };
-
-
         });
-
-
-
-        var errorElement;
-        function showError(message) {
-            if (!errorElement) {
-                errorElement = document.createElement("div");
-                errorElement.className = "error-message";
-                const container = document.getElementById("video-container");
-                container.appendChild(errorElement);
-            }
-            errorElement.innerHTML = message;
-        }
 
         function centerVertically() {
             var container = document.getElementById("body");
@@ -1280,19 +1237,6 @@
         centerVertically();
         window.addEventListener("resize", centerVertically);
     </script>
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <defs>
-            <symbol id="chromecast" viewBox="0 0 18 18" width="18px" height="18px">
-                <g transform="matrix(.74895 0 0 .75211 .025316 .025316)" fill="none" fill-rule="evenodd">
-                    <path
-                        d="m1 18v3h3c0-1.66-1.34-3-3-3zm0-4v2c2.76 0 5 2.24 5 5h2c0-3.87-3.13-7-7-7zm0-4v2c4.97 0 9 4.03 9 9h2c0-6.08-4.93-11-11-11zm20-7h-18c-1.1 0-2 0.9-2 2v3h2v-3h18v14h-7v2h7c1.1 0 2-0.9 2-2v-14c0-1.1-0.9-2-2-2z"
-                        fill="#fff" />
-                    <rect width="24" height="24" />
-                    <g transform="translate(-208,-106)"></g>
-                </g>
-            </symbol>
-        </defs>
-    </svg>
 </body>
 
 </html>

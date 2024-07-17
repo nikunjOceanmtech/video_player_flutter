@@ -3,22 +3,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_flutter/global.dart';
+import 'package:video_player_flutter/home/home_screen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await clearCache();
-  runApp(const MaterialApp(home: WebViewScreen()));
-}
-
-class WebViewScreen extends StatefulWidget {
-  const WebViewScreen({super.key});
-
-  @override
-  State<WebViewScreen> createState() => _WebViewScreenState();
-}
-
-class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserver {
+abstract class HomeWidget extends State<HomeScreen> with WidgetsBindingObserver {
   Map<int, WebViewController?> controllers = {};
   WebViewController? controller;
   PopupType popupType = PopupType.all;
@@ -82,6 +70,8 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
+  // PROGRAMMING part
 
   Future<String> getHTMLString() async {
     if (htmlData.trim().isNotEmpty) {
@@ -257,73 +247,101 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    print("Controllers Length : ${controllers.length}");
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: controllers.isEmpty
-            ? Center(child: CircularProgressIndicator())
-            : PageView.builder(
-                itemCount: controllers.length,
-                scrollDirection: Axis.vertical,
-                onPageChanged: (index) async {
-                  int tempIndex = index;
+  Future<void> loadDuration({required WebViewController? controller, required int index}) async {
+    print("============Load duration called");
+    setState(() {});
+    // await controller?.reload();
+    await controller?.addJavaScriptChannel(
+      "Duration",
+      onMessageReceived: (value) {
+        if (duration == 0) {
+          duration = double.tryParse(value.message) ?? 0;
+        }
+      },
+    );
+    await controller?.addJavaScriptChannel(
+      "CurrentDuration",
+      onMessageReceived: (value) {
+        print("===================CurrentDuration${value.message}");
+        currentDuration = double.tryParse(value.message) ?? 0;
+        setState(() {});
+      },
+    );
+  }
 
-                  print("===============");
+  Future<void> _handleTap() async {
+    if (controller == null) return;
+    isIconShow = true;
+    setState(() {});
+    Future.delayed(Duration(seconds: 1), () => setState(() => isIconShow = false));
+    isPlaying = !isPlaying;
+    await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
+  }
 
-                  if ((tempIndex == currentIndex) || (tempIndex < 0)) {
-                    print("=====================1Already Loaded");
-                    return;
-                  }
-                  if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
-                    print("====================2Already Loaded");
-                    return;
-                  }
+  // UI part
 
-                  if (tempIndex > focusedIndex) {
-                    _playNext(tempIndex);
-                  } else {
-                    _playPrevious(tempIndex);
-                  }
-                  focusedIndex = tempIndex;
-                },
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      controllers[index] == null
-                          ? Center(child: CircularProgressIndicator())
-                          : WebViewWidget(
-                              controller: controllers[index]!,
-                              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                                Factory<OneSequenceGestureRecognizer>(
-                                  () => TapGestureRecognizer()..onTap = _handleTap,
-                                ),
-                              },
-                            ),
-                      playAndPauseButton(context: context),
-                      volumeAndBackWordButton(context: context),
-                      forwordButton(context: context),
-                      // sliderView(index: index),
-                      settingView(),
-                      isLoading
-                          ? Container(
-                              height: double.infinity,
-                              width: double.infinity,
-                              color: p1Color.withOpacity(0.2),
-                              alignment: Alignment.center,
-                              child: CircularProgressIndicator(),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
-                  );
-                },
-              ),
+  Widget screenView({required BuildContext context}) {
+    if (controllers.isEmpty) {
+      return Expanded(child: CircularProgressIndicator());
+    }
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: PageView.builder(
+        itemCount: controllers.length,
+        scrollDirection: Axis.vertical,
+        onPageChanged: (index) async {
+          int tempIndex = index;
+
+          print("===============");
+
+          if ((tempIndex == currentIndex) || (tempIndex < 0)) {
+            print("=====================1Already Loaded");
+            return;
+          }
+          if ((tempIndex == currentIndex) || (tempIndex >= videos.length)) {
+            print("====================2Already Loaded");
+            return;
+          }
+
+          if (tempIndex > focusedIndex) {
+            _playNext(tempIndex);
+          } else {
+            _playPrevious(tempIndex);
+          }
+          focusedIndex = tempIndex;
+        },
+        itemBuilder: (context, index) {
+          return Stack(
+            children: [
+              controllers[index] == null
+                  ? Center(child: CircularProgressIndicator())
+                  : WebViewWidget(
+                      controller: controllers[index]!,
+                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                        Factory<OneSequenceGestureRecognizer>(
+                          () => TapGestureRecognizer()..onTap = _handleTap,
+                        ),
+                      },
+                    ),
+              playAndPauseButton(context: context),
+              volumeAndBackWordButton(context: context),
+              forwordButton(context: context),
+              // sliderView(index: index),
+              settingView(),
+              isLoading
+                  ? Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      color: p1Color.withOpacity(0.2),
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          );
+        },
       ),
-      floatingActionButton: floatingButton(context: context),
     );
   }
 
@@ -549,37 +567,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> _handleTap() async {
-    if (controller == null) return;
-    isIconShow = true;
-    setState(() {});
-    Future.delayed(Duration(seconds: 1), () => setState(() => isIconShow = false));
-    isPlaying = !isPlaying;
-    await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
-  }
-
-  Future<void> loadDuration({required WebViewController? controller, required int index}) async {
-    print("============Load duration called");
-    setState(() {});
-    // await controller?.reload();
-    await controller?.addJavaScriptChannel(
-      "Duration",
-      onMessageReceived: (value) {
-        if (duration == 0) {
-          duration = double.tryParse(value.message) ?? 0;
-        }
-      },
-    );
-    await controller?.addJavaScriptChannel(
-      "CurrentDuration",
-      onMessageReceived: (value) {
-        print("===================CurrentDuration${value.message}");
-        currentDuration = double.tryParse(value.message) ?? 0;
-        setState(() {});
-      },
     );
   }
 }

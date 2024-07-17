@@ -11,6 +11,12 @@ analyzer:
   errors:
     depend_on_referenced_packages: ignore
     prefer_const_constructors: ignore
+    prefer_const_literals_to_create_immutables: ignore
+    dead_code: ignore
+    avoid_print: ignore
+    unused_import: ignore
+    avoid_web_libraries_in_flutter: ignore
+    
 include: package:flutter_lints/flutter.yaml
 
 linter:
