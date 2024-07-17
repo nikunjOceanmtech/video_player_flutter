@@ -83,7 +83,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     super.dispose();
   }
 
-  Future<String> getHTMLString() async {
+  Future<String> _getHTMLString() async {
     if (htmlData.trim().isNotEmpty) {
       return htmlData;
     }
@@ -101,9 +101,9 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
       String videoId = videos[index];
 
-      final WebViewController controller = loadController(index: index);
+      final WebViewController controller = _loadController(index: index);
       await controller.loadHtmlString(
-        (await getHTMLString())
+        (await _getHTMLString())
             .replaceAll('{{videoid}}', videoId)
             .replaceAll('{{autoplay}}', index == currentIndex ? 'true' : 'false'),
       );
@@ -112,7 +112,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
       controllers[index] = controller;
 
       if (index != 0) {
-        await stopControllerAtIndex(index);
+        await _stopControllerAtIndex(index);
       }
 
       // print('🚀🚀🚀 INITIALIZED $index');
@@ -122,28 +122,28 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
         ' : Values ${controllers.values.toList().toString()}');
   }
 
-  Future<void> playControllerAtIndex(int index) async {
+  Future<void> _playControllerAtIndex(int index) async {
     if (controllers.containsKey(index) && controllers[index] != null) {
       currentIndex = index;
       controller = controllers[index]!;
       duration = 0;
+      // loadDuration(controller: controller, index: index);
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
-      loadDuration(controller: controllers[currentIndex], index: index);
       print('🚀🚀🚀 INITIALIZED Playing Index : $index}');
       Future.delayed(Duration.zero, () => setState(() {}));
     } else {
       await _initializeControllerAtIndex(index);
-      await playControllerAtIndex(index);
+      await _playControllerAtIndex(index);
     }
   }
 
-  Future<void> playControllerNow(int index) async {
+  Future<void> _playControllerNow(int index) async {
     if (controllers.containsKey(index) && controllers[index] != null) {
       await controllers[index]?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
     }
   }
 
-  Future<void> stopControllerAtIndex(int index) async {
+  Future<void> _stopControllerAtIndex(int index) async {
     if (controllers.containsKey(index) && controllers[index] != null) {
       controllers[index]?.removeJavaScriptChannel("Duration");
       controllers[index]?.removeJavaScriptChannel("CurrentDuration");
@@ -153,7 +153,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   Future<void> _disposeControllerAtIndex(int index) async {
     if (controllers.keys.contains(index) && controllers[index] != null) {
-      await stopControllerAtIndex(index);
+      await _stopControllerAtIndex(index);
       controllers[index]?.clearCache();
       controllers[index]?.clearLocalStorage();
       controllers[index] = null;
@@ -161,10 +161,10 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     }
   }
 
-  WebViewController loadController({required int index}) {
+  WebViewController _loadController({required int index}) {
     return WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(const Color(0xff000000))
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
@@ -184,14 +184,14 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   Future<void> _playNext(int index) async {
     /// Stop [index - 1] controller
-    await stopControllerAtIndex(index - 1);
+    await _stopControllerAtIndex(index - 1);
 
     /// Dispose [index - 2] controller
     await _disposeControllerAtIndex(index - 5);
 
     /// Play current Reels (already initialized)
 
-    await playControllerAtIndex(index);
+    await _playControllerAtIndex(index);
 
     /// Initialize [index + 1] controller
 
@@ -222,14 +222,14 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
 
   Future<void> _playPrevious(int index) async {
     /// Stop [index + 1] controller
-    await stopControllerAtIndex(index + 1);
+    await _stopControllerAtIndex(index + 1);
 
     /// Dispose [index + 2] controller
     await _disposeControllerAtIndex(index + 5);
 
     /// Play current Reels (already initialized)
 
-    await playControllerAtIndex(index);
+    await _playControllerAtIndex(index);
 
     /// Initialize [index - 1] controller
     if (controllers.containsKey(index - 1) && controllers[index - 1] != null) {
@@ -261,7 +261,6 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
   Widget build(BuildContext context) {
     print("Controllers Length : ${controllers.length}");
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -304,11 +303,11 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                                 ),
                               },
                             ),
-                      playAndPauseButton(context: context),
-                      volumeAndBackWordButton(context: context),
-                      forwordButton(context: context),
-                      sliderView(index: index),
-                      settingView(),
+                      _playAndPauseButton(context: context),
+                      _volumeAndBackWordButton(context: context),
+                      _forwordButton(context: context),
+                      _sliderView(index: index),
+                      _settingView(),
                       isLoading
                           ? Container(
                               height: double.infinity,
@@ -323,11 +322,11 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
                 },
               ),
       ),
-      floatingActionButton: floatingButton(context: context),
+      floatingActionButton: _floatingButton(context: context),
     );
   }
 
-  Widget floatingButton({required BuildContext context}) {
+  Widget _floatingButton({required BuildContext context}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -339,9 +338,10 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
               // js.context.callMethod("hello");
               // if (controller == null) return;
               // await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
-              print("=============${await controllers[currentIndex]?.currentUrl()}");
-              await loadDuration(controller: controllers[currentIndex], index: currentIndex);
-              print("=====================Duarion = $duration >>>>>>>>> Current Durarion = $currentDuration");
+              _playControllerNow(currentIndex);
+              // print("=============${await controllers[currentIndex]?.currentUrl()}");
+              // await loadDuration(controller: controllers[currentIndex], index: currentIndex);
+              // print("=====================Duarion = $duration >>>>>>>>> Current Durarion = $currentDuration");
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -358,7 +358,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget playAndPauseButton({required BuildContext context}) {
+  Widget _playAndPauseButton({required BuildContext context}) {
     return GestureDetector(
       onTap: () async => await _handleTap(),
       child: Align(
@@ -380,7 +380,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget volumeAndBackWordButton({required BuildContext context}) {
+  Widget _volumeAndBackWordButton({required BuildContext context}) {
     return GestureDetector(
       onVerticalDragUpdate: (details) async {
         if (controller == null) return;
@@ -403,7 +403,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget forwordButton({required BuildContext context}) {
+  Widget _forwordButton({required BuildContext context}) {
     return GestureDetector(
       onTap: () async => await controller!.runJavaScript('flutterControl({ "command": "forward", "parameter": 10 });'),
       child: Align(
@@ -418,7 +418,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget sliderView({required int index}) {
+  Widget _sliderView({required int index}) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
@@ -442,7 +442,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     );
   }
 
-  Widget settingView() {
+  Widget _settingView() {
     return Align(
       alignment: Alignment.topRight,
       child: SizedBox(
@@ -561,10 +561,7 @@ class _WebViewScreenState extends State<WebViewScreen> with WidgetsBindingObserv
     await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
   }
 
-  Future<void> loadDuration({required WebViewController? controller, required int index}) async {
-    print("============Load duration called");
-    setState(() {});
-    // await controller?.reload();
+  Future<void> _loadDuration({required WebViewController? controller, required int index}) async {
     await controller?.addJavaScriptChannel(
       "Duration",
       onMessageReceived: (value) {
