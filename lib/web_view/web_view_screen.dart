@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:video_player_flutter/global.dart';
-import 'package:video_player_flutter/main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import 'package:video_player_flutter/global.dart';
 
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({super.key});
@@ -18,6 +18,7 @@ class _WebViewScreenState extends WebViewWidgets {
   Widget build(BuildContext context) {
     print("Controllers Length : ${controllers.length}");
     return Scaffold(
+      backgroundColor: Colors.black,
       body: _screenView(context: context),
       floatingActionButton: _floatingButton(context: context),
     );
@@ -116,6 +117,7 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
 
       /// Add to [controllers] list
       controllers[index] = controller;
+      // await _loadDuration(controller: controllers[index], index: index);
 
       if (index != 0) {
         await _stopControllerAtIndex(index);
@@ -132,11 +134,34 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
     if (controllers.containsKey(index) && controllers[index] != null) {
       currentIndex = index;
       controller = controllers[index]!;
-      duration = 0;
-      // loadDuration(controller: controller, index: index);
+      await controller?.removeJavaScriptChannel("Duration");
+      await controller?.removeJavaScriptChannel("CurrentDuration");
+
+      print("=====================Removed Done");
+
+      // await controller?.addJavaScriptChannel(
+      //   "Duration",
+      //   onMessageReceived: (value) {
+      //     print("===================Duration${value.message}");
+      //     if (duration == 0) {
+      //       duration = double.tryParse(value.message) ?? 0;
+      //     }
+      //   },
+      // );
+      // await controllers[index]!.addJavaScriptChannel(
+      //   "CurrentDuration",
+      //   onMessageReceived: (value) {
+      //     print("===================CurrentDuration${value.message}");
+      //     currentDuration = double.tryParse(value.message) ?? 0;
+      //     setState(() {});
+      //   },
+      // );
+      // bool ischeck = await _loadDuration(controller: controller, index: index);
+      // if (ischeck) {
       await controller?.runJavaScript('flutterControl({ "command": "play", "parameter": null });');
       print('🚀🚀🚀 INITIALIZED Playing Index : $index}');
       Future.delayed(Duration.zero, () => setState(() {}));
+      // }
     } else {
       await _initializeControllerAtIndex(index);
       await _playControllerAtIndex(index);
@@ -277,8 +302,6 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
               onPageChanged: (index) async {
                 int tempIndex = index;
 
-                print("===============");
-
                 if ((tempIndex == currentIndex) || (tempIndex < 0)) {
                   print("=====================1Already Loaded");
                   return;
@@ -339,9 +362,9 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
           child: FloatingActionButton(
             onPressed: () async {
               // js.context.callMethod("hello");
-              // if (controller == null) return;
-              // await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
-              _playControllerNow(currentIndex);
+              if (controller == null) return;
+              await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
+              // _playControllerNow(currentIndex);
               // print("=============${await controllers[currentIndex]?.currentUrl()}");
               // await loadDuration(controller: controllers[currentIndex], index: currentIndex);
               // print("=====================Duarion = $duration >>>>>>>>> Current Durarion = $currentDuration");
@@ -564,10 +587,12 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
     await controller!.runJavaScript('flutterControl({ "command": "togglePlay", "parameter": null });');
   }
 
-  Future<void> _loadDuration({required WebViewController? controller, required int index}) async {
+  Future<bool> _loadDuration({required WebViewController? controller, required int index}) async {
+    controller?.reload();
     await controller?.addJavaScriptChannel(
       "Duration",
       onMessageReceived: (value) {
+        print("===================Duration${value.message}");
         if (duration == 0) {
           duration = double.tryParse(value.message) ?? 0;
         }
@@ -581,5 +606,9 @@ abstract class WebViewWidgets extends State<WebViewScreen> with WidgetsBindingOb
         setState(() {});
       },
     );
+    if (duration != 0) {
+      return true;
+    }
+    return false;
   }
 }
